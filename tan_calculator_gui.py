@@ -47,26 +47,65 @@ class TanCalculatorApp:
                               state="disabled", bg="#f5f5f5", relief="sunken")
         self.output.grid(row=4, column=0, columnspan=2, **pad)
 
-    def set_output(self, text: str):
+    def set_output(self, text: str, is_error: bool = False):
         self.output.config(state="normal")
         self.output.delete("1.0", tk.END)
         self.output.insert("1.0", text)
+        if is_error:
+            self.output.config(fg="red")
+        else:
+            self.output.config(fg="black")
         self.output.config(state="disabled")
 
     def compute(self):
         raw = self.entry.get().strip()
+
+        if raw == "":
+            self.set_output(
+                "Please enter an angle value.\n"
+                "Example: 45 or 1.5708",
+                is_error=True)
+            return
+
         try:
             angle = float(raw)
         except ValueError:
-            self.set_output(f"Invalid input '{raw}'. Please enter a number.")
+            self.set_output(
+                f"'{raw}' is not a valid number.\n"
+                "Please enter a real number (e.g., 45, -30.5, 1.5708).",
+                is_error=True)
             return
 
         unit = self.unit_var.get()
-        x_rad = angle * (math.pi / 180.0) if unit == "deg" else angle
+        try:
+            x_rad = angle * (math.pi / 180.0) if unit == "deg" else angle
+        except Exception:
+            self.set_output(
+                "Error converting angle.\n"
+                "Please check the unit selection and try again.",
+                is_error=True)
+            return
 
-        result = tan_ratio(x_rad)
+        try:
+            result = tan_ratio(x_rad)
+        except ZeroDivisionError:
+            self.set_output(
+                "Math error: division by zero.\n"
+                "The input may be at an asymptote (x = pi/2 + k*pi).",
+                is_error=True)
+            return
+        except Exception as exc:
+            self.set_output(
+                f"Unexpected error during computation:\n{exc}\n"
+                "Please try a different angle value.",
+                is_error=True)
+            return
+
         unit_str = "deg" if unit == "deg" else "rad"
-        self.set_output(f"tan({angle} {unit_str}) =\n{result}")
+        if isinstance(result, str):
+            self.set_output(result, is_error=True)
+        else:
+            self.set_output(f"tan({angle} {unit_str}) =\n{result:.10f}")
 
 
 def main():
