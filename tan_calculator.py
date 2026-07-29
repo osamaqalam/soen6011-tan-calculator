@@ -1,28 +1,42 @@
 #!/usr/bin/env python3
 """
-tan_calculator.py — Tangent Function Calculator
-SOEN 6011, Problem 4: Implementation of tan(x)
+tan_calculator.py — Tangent Function Calculator (From Scratch)
+SOEN 6011, Problem 5: Implementation of tan(x) using only
+                     arithmetic, input, output, and Tkinter.
 Algorithm: Ratio via Taylor Series (sin(x) / cos(x))
+No math library functions used.
 """
 
-import math
-
+PI = 3.14159265358979323846
 TOLERANCE = 1e-12
 MAX_TERMS = 100
-EPSILON = 1e-10
 
+
+def abs_val(x: float) -> float:
+    return x if x >= 0 else -x
+
+
+def modulo(x: float, y: float) -> float:
+    quotient = int(x / y)
+    remainder = x - quotient * y
+    if remainder < 0:
+        remainder += y
+    return remainder
+
+
+def round_int(x: float) -> int:
+    return int(x + 0.5) if x >= 0 else int(x - 0.5)
+
+
+# ---------- core trigonometric functions ----------
 
 def reduce_angle(x: float) -> float:
-    """Reduce angle to [0, 2*pi) using mathematical range reduction."""
-    two_pi = 2.0 * math.pi
-    x = x % two_pi
-    if x < 0:
-        x += two_pi
+    two_pi = 2.0 * PI
+    x = modulo(x, two_pi)
     return x
 
 
 def sin_taylor(x: float) -> float:
-    """Compute sin(x) using Taylor series expansion."""
     x = reduce_angle(x)
     result = 0.0
     term = x
@@ -30,14 +44,13 @@ def sin_taylor(x: float) -> float:
     for _ in range(MAX_TERMS):
         result += term
         term *= -(x * x) / ((2 * n) * (2 * n + 1))
-        if abs(term) < TOLERANCE:
+        if abs_val(term) < TOLERANCE:
             break
         n += 1
     return result
 
 
 def cos_taylor(x: float) -> float:
-    """Compute cos(x) using Taylor series expansion."""
     x = reduce_angle(x)
     result = 0.0
     term = 1.0
@@ -45,36 +58,32 @@ def cos_taylor(x: float) -> float:
     for _ in range(MAX_TERMS):
         result += term
         term *= -(x * x) / ((2 * n - 1) * (2 * n))
-        if abs(term) < TOLERANCE:
+        if abs_val(term) < TOLERANCE:
             break
         n += 1
     return result
 
 
 def tan_ratio(x_rad: float) -> float | str:
-    """
-    Compute tan(x) = sin(x) / cos(x) using Taylor series for both.
-    Returns float result or an error string if asymptote is detected.
-    """
     reduced = reduce_angle(x_rad)
 
-    quotient = (reduced / math.pi) - 0.5
-    if abs(quotient - round(quotient)) < 1e-12:
-        k = round(quotient)
-        return f"Undefined: asymptote at x = {x_rad:.6f} rad (x = pi/2 + {k}*pi)"
+    quotient = (reduced / PI) - 0.5
+    if abs_val(quotient - round_int(quotient)) < 1e-12:
+        k_val = round_int(quotient)
+        return f"Undefined: asymptote at x = {x_rad:.6f} rad (x = pi/2 + {k_val}*pi)"
 
     sin_val = sin_taylor(reduced)
     cos_val = cos_taylor(reduced)
     return sin_val / cos_val
 
 
+# ---------- TUI ----------
+
 def degrees_to_radians(deg: float) -> float:
-    """Convert degrees to radians."""
-    return deg * (math.pi / 180.0)
+    return deg * (PI / 180.0)
 
 
 def get_numeric_input(prompt: str) -> float:
-    """Prompt user for a numeric value; raise ValueError on non-numeric input."""
     raw = input(prompt).strip()
     try:
         return float(raw)
@@ -83,7 +92,6 @@ def get_numeric_input(prompt: str) -> float:
 
 
 def select_unit() -> str:
-    """Prompt user to select angle unit; returns 'deg' or 'rad'."""
     while True:
         unit = input("Unit (deg/rad): ").strip().lower()
         if unit in ("deg", "rad"):
@@ -92,7 +100,6 @@ def select_unit() -> str:
 
 
 def run():
-    """Main textual user interface loop."""
     print("=" * 50)
     print("  TANGENT FUNCTION CALCULATOR — tan(x)")
     print("  SOEN 6011 | Algorithm: sin(x)/cos(x) via Taylor Series")

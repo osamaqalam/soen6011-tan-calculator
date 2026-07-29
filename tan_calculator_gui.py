@@ -6,9 +6,7 @@ Uses tan_ratio() from tan_calculator.py (D1/Problem 4 implementation).
 """
 
 import tkinter as tk
-from tkinter import messagebox
-import math
-from tan_calculator import tan_ratio
+from tan_calculator import tan_ratio, PI
 
 
 class TanCalculatorApp:
@@ -78,7 +76,7 @@ class TanCalculatorApp:
 
         unit = self.unit_var.get()
         try:
-            x_rad = angle * (math.pi / 180.0) if unit == "deg" else angle
+            x_rad = angle * (PI / 180.0) if unit == "deg" else angle
         except Exception:
             self.set_output(
                 "Error converting angle.\n"
