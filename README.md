@@ -7,23 +7,25 @@ A scientific calculator implementation of the transcendental function **tan(x)**
 ### GUI (Graphical User Interface)
 
 ```bash
-python tan_calculator_gui.py
+python -m src.tan_calculator_gui
 ```
-
-- Enter an angle and select the unit (degrees or radians)
-- Press the **Compute tan(x)** button or hit **Enter**
-- The result is displayed in the output area
-- Error messages appear in red with suggestions on how to fix them
-
-**Requirements:** Python 3.x with tkinter (included in standard Python distribution).
 
 ### TUI (Textual User Interface)
 
 ```bash
-python tan_calculator.py
+python -m src.tan_calculator
 ```
 
-- Follow the command-line prompts to enter the angle and unit
+### Run Unit Tests
+
+```bash
+python -m unittest discover tests
+```
+or individually:
+```bash
+python tests/test_tan_calculator.py
+python tests/test_gui.py
+```
 
 ## Algorithm
 
@@ -66,11 +68,19 @@ tan(x) is undefined at x = π/2 + kπ (where k is any integer). The function det
 
 ## Files
 
-| File | Description |
-|---|---|
-| `tan_calculator.py` | Core implementation — Taylor series, tan computation, TUI |
-| `tan_calculator_gui.py` | Tkinter GUI wrapping the core functions |
-| `README.md` | This file |
+```
+soen6011-tan-calculator/
+├── README.md
+├── .gitignore
+├── src/
+│   ├── __init__.py
+│   ├── tan_calculator.py          # Core: Taylor series, tan computation, TUI
+│   └── tan_calculator_gui.py      # Tkinter GUI
+└── tests/
+    ├── __init__.py
+    ├── test_tan_calculator.py      # 37 tests for core functions
+    └── test_gui.py                 # 9 tests for GUI behavior
+```
 
 ## License
 

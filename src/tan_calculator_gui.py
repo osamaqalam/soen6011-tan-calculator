@@ -6,7 +6,7 @@ Uses tan_ratio() from tan_calculator.py (D1/Problem 4 implementation).
 """
 
 import tkinter as tk
-from tan_calculator import tan_ratio, PI
+from src.tan_calculator import tan_ratio, PI
 
 
 class TanCalculatorApp:
